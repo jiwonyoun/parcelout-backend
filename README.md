@@ -3,11 +3,15 @@
 
 #### Backend for parcel out chatbot 💬
 
+<br>
+
 ## Installation
 
 ```bash
 $ npm install
 ```
+
+<br>
 
 ## Running the app
 
@@ -21,6 +25,8 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+<br>
 
 ## License
 
