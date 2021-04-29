@@ -8,7 +8,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 @InputType({ isAbstract: true })
 @ObjectType()
 export class User extends CoreEntity {
-  @Column()
+  @Column({ unique: true })
   @Field(() => String)
   name: string;
 

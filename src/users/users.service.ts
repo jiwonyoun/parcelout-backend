@@ -6,6 +6,7 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { EditAccountInput, EditAccountOutput } from './dtos/edit-account.dto';
+import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { AllUsersOutput } from './dtos/user-profile.dto';
 import { User } from './entities/user.entity';
 
@@ -36,11 +37,46 @@ export class UsersService {
     }
   }
 
+  async login({ name, password }: LoginInput): Promise<LoginOutput> {
+    try {
+      const user = await this.users.findOne({ name });
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+
+      const passwordCorrect = await user.checkPassword(password);
+      if (!passwordCorrect) {
+        return {
+          ok: false,
+          error: 'Wrong password',
+        };
+      }
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
   async createAccount(
     createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
     try {
-      const user = await this.users.create(createAccountInput);
+      const user = await this.users.findOne({ name: createAccountInput.name });
+      if (user) {
+        return {
+          ok: false,
+          error: `${createAccountInput.name} is already exists`,
+        };
+      }
       await this.users.save(user);
       return {
         ok: true,
@@ -76,7 +112,7 @@ export class UsersService {
         user.password = password;
       }
 
-      await this.users.save(user);
+      await this.users.save({ ...user });
       return {
         ok: true,
       };
