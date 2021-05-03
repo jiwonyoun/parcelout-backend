@@ -1,11 +1,18 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { UsersModule } from './users/users.module';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { CoreEntity } from './common/entities/core.entity';
+import { JwtModule } from './jwt/jwt.module';
+import { JwtMiddleWare } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,7 +27,12 @@ import { CoreEntity } from './common/entities/core.entity';
         DB_PASS: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
+    }),
+    UsersModule,
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -30,15 +42,23 @@ import { CoreEntity } from './common/entities/core.entity';
       port: Number(process.env.DB_PORT),
       database: process.env.DB_DATABASE,
       synchronize: process.env.NODE_ENV !== 'prod',
-      // logging: true,
+      // logging: process.env.NODE_ENV !== 'prod',
       entities: [User],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] }),
     }),
-    UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleWare).forRoutes({
+      path: '/graphql',
+      method: RequestMethod.ALL,
+    });
+  }
+}

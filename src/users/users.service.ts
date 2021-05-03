@@ -1,19 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from 'src/jwt/jwt.service';
 import { Repository } from 'typeorm';
 import {
   CreateAccountInput,
   CreateAccountOutput,
 } from './dtos/create-account.dto';
+import {
+  DeleteAccountInput,
+  DeleteAccountOutput,
+} from './dtos/delete-account.dto';
 import { EditAccountInput, EditAccountOutput } from './dtos/edit-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
-import { AllUsersOutput } from './dtos/user-profile.dto';
+import {
+  AllUsersOutput,
+  UserProfileInput,
+  UserProfileOutput,
+} from './dtos/user-profile.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    private readonly configServce: ConfigService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async findAll(): Promise<AllUsersOutput> {
@@ -37,9 +49,27 @@ export class UsersService {
     }
   }
 
+  async findById({ id }: UserProfileInput): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOneOrFail(id);
+      return {
+        ok: true,
+        user,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'User not found',
+      };
+    }
+  }
+
   async login({ name, password }: LoginInput): Promise<LoginOutput> {
     try {
-      const user = await this.users.findOne({ name });
+      const user = await this.users.findOne(
+        { name },
+        { select: ['id', 'name', 'password'] },
+      );
       if (!user) {
         return {
           ok: false,
@@ -55,8 +85,10 @@ export class UsersService {
         };
       }
 
+      const token = await this.jwtService.sign(user.id);
       return {
         ok: true,
+        token,
       };
     } catch (error) {
       return {
@@ -77,7 +109,7 @@ export class UsersService {
           error: `${createAccountInput.name} is already exists`,
         };
       }
-      await this.users.save(user);
+      await this.users.save(await this.users.create(createAccountInput));
       return {
         ok: true,
       };
@@ -120,6 +152,30 @@ export class UsersService {
       return {
         ok: false,
         error: 'Could not edit account',
+      };
+    }
+  }
+
+  async deleteAccount({
+    id,
+  }: DeleteAccountInput): Promise<DeleteAccountOutput> {
+    try {
+      const exists = await this.users.findOne(id);
+      if (!exists) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+
+      await this.users.delete(id);
+      return {
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not delete account',
       };
     }
   }

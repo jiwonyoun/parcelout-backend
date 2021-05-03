@@ -1,8 +1,20 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
+
+export enum UserRole {
+  Operator = 'Operator',
+  Manager = 'Manager',
+}
+
+registerEnumType(UserRole, { name: 'UserRole' });
 
 @Entity()
 @InputType({ isAbstract: true })
@@ -16,9 +28,13 @@ export class User extends CoreEntity {
   @Field(() => String)
   phoneNumber: string;
 
-  @Column()
+  @Column({ select: false })
   @Field(() => String)
   password: string;
+
+  @Column({ type: 'enum', enum: UserRole })
+  @Field(() => UserRole)
+  role: UserRole;
 
   @BeforeInsert()
   @BeforeUpdate()
