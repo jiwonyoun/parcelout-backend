@@ -1,6 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
+import { CustomerService } from 'src/customer/customer.service';
+import { CreateCustomerInput, CreateCustomerOutput } from 'src/customer/dtos/create-customer.dto';
+import { EditCustomerInput, EditCustomerOutput } from 'src/customer/dtos/edit-customer.dto';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -21,7 +24,7 @@ import { UsersService } from './users.service';
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, private readonly customerService: CustomerService) { }
 
   @Query(() => User)
   @Role(['Any'])
@@ -67,5 +70,15 @@ export class UsersResolver {
     @Args() deleteAccountInput: DeleteAccountInput,
   ): Promise<DeleteAccountOutput> {
     return this.usersService.deleteAccount(deleteAccountInput);
+  }
+
+  @Mutation(() => CreateCustomerOutput)
+  createCustomer(@Args('input') createCustomerInput: CreateCustomerInput): Promise<CreateCustomerOutput> {
+    return this.customerService.createCustomer(createCustomerInput);
+  }
+
+  @Mutation(() => EditCustomerOutput)
+  editCustomer(@Args('id') id: number, @Args('input') editCustomerInput: EditCustomerInput): Promise<EditCustomerOutput> {
+    return this.customerService.editCustomer(id, editCustomerInput);
   }
 }

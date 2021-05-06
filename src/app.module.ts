@@ -13,6 +13,8 @@ import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleWare } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
+import { CustomerModule } from './customer/customer.module';
+import { Customer } from './customer/entities/customer.entity';
 
 @Module({
   imports: [
@@ -31,9 +33,8 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
     UsersModule,
-    JwtModule.forRoot({
-      privateKey: process.env.PRIVATE_KEY,
-    }),
+    CustomerModule,
+    JwtModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -43,7 +44,7 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_DATABASE,
       synchronize: process.env.NODE_ENV !== 'prod',
       // logging: process.env.NODE_ENV !== 'prod',
-      entities: [User],
+      entities: [User, Customer],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,

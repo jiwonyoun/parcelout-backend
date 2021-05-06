@@ -4,7 +4,7 @@ import { JwtService } from './jwt.service';
 @Module({})
 @Global()
 export class JwtModule {
-  static forRoot(privateKey): DynamicModule {
+  static forRoot(): DynamicModule {
     return {
       module: JwtModule,
       providers: [JwtService],

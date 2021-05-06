@@ -26,7 +26,7 @@ export class UsersService {
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly configServce: ConfigService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async findAll(): Promise<AllUsersOutput> {
     try {
@@ -179,4 +179,5 @@ export class UsersService {
       };
     }
   }
+
 }

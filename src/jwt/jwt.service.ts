@@ -4,7 +4,8 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {
+  }
 
   sign(id: number): string {
     return jwt.sign({ id }, this.configService.get('PRIVATE_KEY'));
