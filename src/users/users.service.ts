@@ -28,7 +28,7 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async findAll(): Promise<AllUsersOutput> {
+  async findAllUsers(): Promise<AllUsersOutput> {
     try {
       const users = await this.users.find();
       if (!users) {
@@ -49,7 +49,7 @@ export class UsersService {
     }
   }
 
-  async findById({ id }: UserProfileInput): Promise<UserProfileOutput> {
+  async findUserById({ id }: UserProfileInput): Promise<UserProfileOutput> {
     try {
       const user = await this.users.findOneOrFail(id);
       return {

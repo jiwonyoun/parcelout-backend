@@ -34,8 +34,8 @@ export class UsersResolver {
   }
 
   @Query(() => AllUsersOutput)
-  findAll(): Promise<AllUsersOutput> {
-    return this.usersService.findAll();
+  findAllUsers(): Promise<AllUsersOutput> {
+    return this.usersService.findAllUsers();
   }
 
   @Query(() => LoginOutput)
@@ -44,10 +44,10 @@ export class UsersResolver {
   }
 
   @Query(() => UserProfileOutput)
-  userProfile(
+  findUserById(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
-    return this.usersService.findById(userProfileInput);
+    return this.usersService.findUserById(userProfileInput);
   }
 
   @Mutation(() => CreateAccountOutput)
@@ -72,13 +72,4 @@ export class UsersResolver {
     return this.usersService.deleteAccount(deleteAccountInput);
   }
 
-  @Mutation(() => CreateCustomerOutput)
-  createCustomer(@Args('input') createCustomerInput: CreateCustomerInput): Promise<CreateCustomerOutput> {
-    return this.customerService.createCustomer(createCustomerInput);
-  }
-
-  @Mutation(() => EditCustomerOutput)
-  editCustomer(@Args('id') id: number, @Args('input') editCustomerInput: EditCustomerInput): Promise<EditCustomerOutput> {
-    return this.customerService.editCustomer(id, editCustomerInput);
-  }
 }

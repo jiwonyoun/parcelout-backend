@@ -47,7 +47,8 @@ export class User extends CoreEntity {
   customers?: Customer[];
 
   @RelationId((user: User) => user.customers)
-  userId?: number[];
+  @Field(() => [Number], { nullable: true })
+  customerId?: number[];
 
   @BeforeInsert()
   @BeforeUpdate()

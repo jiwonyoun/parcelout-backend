@@ -13,17 +13,17 @@ export class Customer extends CoreEntity {
   @IsString()
   name: string;
 
-  // unique true 값 추가
-  @Column()
+  @Column({ unique: true })
   @Field(() => String)
   @IsString()
   phoneNumber: string;
 
-  @ManyToMany(() => User, user => user.customers, { onDelete: 'CASCADE' })
+  @ManyToMany(() => User, user => user.customers)
   @JoinTable()
-  @Field(() => [User])
-  users: User[];
+  @Field(() => [User], { nullable: true })
+  users?: User[];
 
   @RelationId((customer: Customer) => customer.users)
-  userId: number[];
+  @Field(() => [Number], { nullable: true })
+  userId?: number[];
 }

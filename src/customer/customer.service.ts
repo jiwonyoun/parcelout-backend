@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RuleTester } from 'eslint';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateCustomerInput, CreateCustomerOutput } from './dtos/create-customer.dto';
+import { AllCustomersOutput, CustomerProfileOutput } from './dtos/customer-profile.dto';
+import { DeleteCustomerOutput } from './dtos/delete-customer.dto';
 import { EditCustomerInput, EditCustomerOutput } from './dtos/edit-customer.dto';
 import { Customer } from './entities/customer.entity';
 
@@ -14,6 +15,51 @@ export class CustomerService {
     private readonly customers: Repository<Customer>,
     @InjectRepository(User) private readonly users: Repository<User>,
   ) { }
+
+
+  async findAllCustomers(): Promise<AllCustomersOutput> {
+    try {
+      const customers = await this.customers.find({ relations: ['users'] })
+      if (!customers) {
+        return {
+          ok: false,
+          error: 'Customers not found',
+        }
+      }
+
+      return {
+        ok: true,
+        customers,
+      }
+    }
+    catch {
+      return {
+        ok: false,
+        error: 'Coudld not load customers',
+      }
+    }
+  }
+
+  async findCustomerById(id: number): Promise<CustomerProfileOutput> {
+    try {
+      const customer = await this.customers.findOne(id, { relations: ['users'] });
+      if (!customer) {
+        return {
+          ok: false,
+          error: 'Customer not found',
+        }
+      }
+      return {
+        ok: true,
+        customer,
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load customer',
+      }
+    }
+  }
 
   async createCustomer({ builderId, name, phoneNumber }: CreateCustomerInput): Promise<CreateCustomerOutput> {
     try {
@@ -103,4 +149,27 @@ export class CustomerService {
       }
     }
   }
+
+  async deleteCustomer(id: number): Promise<DeleteCustomerOutput> {
+    try {
+      const customer = await this.customers.findOne(id, { relations: ['users'] });
+      if (!customer) {
+        return {
+          ok: false,
+          error: 'Customer not found',
+        }
+      }
+
+      await this.customers.remove(customer);
+      return {
+        ok: true,
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not delete customer',
+      }
+    }
+  }
+
 }
