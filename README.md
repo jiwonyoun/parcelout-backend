@@ -29,6 +29,20 @@ $ npm run start:prod
 
 <br>
 
+## DataModel
+#### User (=Builder)
+  - id
+  - createdAt
+  - updatedAt
+  - name
+  - phoneNumber
+  - password
+  - role
+  - customersmer
+  - customerId
+
+<br>
+
 ## License
 
 jenna-luna (jwyoon1@lunasoft.co.kr)

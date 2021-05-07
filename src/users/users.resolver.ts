@@ -38,7 +38,7 @@ export class UsersResolver {
     return this.usersService.findAllUsers();
   }
 
-  @Query(() => LoginOutput)
+  @Mutation(() => LoginOutput)
   login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     return this.usersService.login(loginInput);
   }
