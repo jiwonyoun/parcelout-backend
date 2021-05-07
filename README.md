@@ -30,7 +30,7 @@ $ npm run start:prod
 <br>
 
 ## DataModel
-#### User (=Builder)
+#### 🏗 User (=Builder)
   - id
   - createdAt
   - updatedAt
@@ -38,8 +38,17 @@ $ npm run start:prod
   - phoneNumber
   - password
   - role
-  - customersmer
+  - customers
   - customerId
+
+#### 👤 Customer
+  - id
+  - createdAt
+  - updatedAt
+  - name
+  - phoneNumber
+  - users
+  - userId
 
 <br>
 
