@@ -7,7 +7,9 @@ export class CreateAccountInput extends OmitType(User, [
   'id',
   'createdAt',
   'updatedAt',
-]) {}
+  'customers',
+  'customerId',
+]) { }
 
 @ObjectType()
-export class CreateAccountOutput extends CoreOutput {}
+export class CreateAccountOutput extends CoreOutput { }
