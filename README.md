@@ -52,6 +52,3 @@ $ npm run start:prod
 
 <br>
 
-## License
-
-jenna-luna (jwyoon1@lunasoft.co.kr)
